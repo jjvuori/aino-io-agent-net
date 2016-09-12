@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using AinoAgent;
+using System.Dynamic;
+using Aino;
 
 namespace AinoAgentTester
 {
@@ -9,10 +10,24 @@ namespace AinoAgentTester
 
         static void Main(string[] args)
         {
+            using (Agent agent = new Agent())
+            {
+                while (true)
+                {
+                    Console.ReadLine();
+                    var msg = CreateMessage();
+                    agent.AddMessage(msg);
+                }
+            }
+
+        }
+
+        static AinoMessage CreateMessage()
+        {
             AinoMessage msg = new AinoMessage();
 
-            msg.From = "CSharp agent";
-            msg.To = "Unknown!";
+            msg.From = "System 0";
+            msg.To = "System 1";
             msg.Timestamp = DateTime.Now;
             msg.AddMetadata("MetadataKey1", "MetadataValue1");
             msg.AddMetadata("meta 2", "meta 2 value");
@@ -20,15 +35,13 @@ namespace AinoAgentTester
             msg.AddId("single value", "value1");
             msg.AddId("single value", "value 2");
 
-            msg.AddId("Multiple values 1", new List<string> {"val1", "val2", "val3"});
-            msg.AddId("Multiple values 2", new List<string> { "val11", "val22", "val33"});
-            msg.AddId("Multiple values 2", new List<string> {"val44", "val55"});
+            msg.AddId("Multiple values 1", new List<string> { "val1", "val2", "val3" });
+            msg.AddId("Multiple values 2", new List<string> { "val11", "val22", "val33" });
+            msg.AddId("Multiple values 2", new List<string> { "val44", "val55" });
             msg.Status = AinoMessage.MessageStatus.Success;
+            msg.Message = "Testing dotnet core!";
 
-            Console.WriteLine(msg.ToJson());
-
-            Console.ReadLine();
-
+            return msg;
         }
     }
 }

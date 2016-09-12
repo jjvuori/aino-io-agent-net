@@ -51,9 +51,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AinoAgent\AinoAgent.csproj">
+    <ProjectReference Include="..\AinoAgent\Aino.csproj">
       <Project>{53127e76-95a3-4306-a684-2306075b30a7}</Project>
-      <Name>AinoAgent</Name>
+      <Name>Aino</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
