@@ -12,6 +12,9 @@ namespace AinoAgentTester
         {
             using (Agent agent = new Agent())
             {
+                agent.Configuration = GetAinoConfiguration();
+                agent.Initialize();
+
                 while (true)
                 {
                     Console.ReadLine();
@@ -19,7 +22,22 @@ namespace AinoAgentTester
                     agent.AddMessage(msg);
                 }
             }
+        }
 
+
+
+
+        static Configuration GetAinoConfiguration()
+        {
+            var conf = new Configuration
+            {
+                ApiKey = "67437716-ed3c-4f6b-84eb-a6b5dd560f3c",
+                SendInterval = 5000,
+                SizeThreshold = 3,
+                Gzip = true
+            };
+
+            return conf;
         }
 
         static AinoMessage CreateMessage()

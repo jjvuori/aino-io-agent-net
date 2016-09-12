@@ -2,6 +2,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -15,26 +16,33 @@ namespace Aino
     internal class HttpSender
     {
         internal volatile bool Stop = false;
-        private ConcurrentQueue<AinoMessage> _queue;
+        private readonly MessageQueue _queue;
+        private readonly Configuration _configuration;
+        private readonly AutoResetEvent _autoEvent;
+        
 
-        // TODO as conf!
-        //private const string AINO_API_ADDRESS = "http://localhost:9090/api/v1";
-        private const string AINO_API_ADDRESS = "https://data.aino.io/rest/v2.0/transaction";
-        private const string AINO_API_KEY = "67437716-ed3c-4f6b-84eb-a6b5dd560f3c";
-
-
-        public HttpSender(ConcurrentQueue<AinoMessage> queue)
+        public HttpSender(MessageQueue queue, Configuration conf)
         {
+            _autoEvent = new AutoResetEvent(false);
             _queue = queue;
+            _configuration = conf;
         }
 
+        internal void DataAdded(int size)
+        {
+            Debug.WriteLine("Data added called!");
+            if (size >= _configuration.SizeThreshold)
+            {
+                Debug.WriteLine("Size threshold exceeded. Signaling.");
+                _autoEvent.Set();
+            }
+        }
 
         internal void StartSending()
         {
             while (!Stop)
             {
-                Thread.Sleep(1000);
-                Console.WriteLine("Looping! Whee!");
+                _autoEvent.WaitOne(_configuration.SendInterval);
                 SendData();
             }
 
@@ -43,24 +51,59 @@ namespace Aino
 
         private async void SendData()
         {
+            Debug.WriteLine("Sending called.");
+
+            // TODO if sending fails, try to resend the same data?
+
             if (_queue.IsEmpty) return;
-
-            using (var client = new HttpClient())
+            
+            using (var client = new HttpClient(new HttpClientHandler() {AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate}, true))
             {
-                AinoMessage msg;
-                _queue.TryDequeue(out msg);
-                if (msg == null) return;
-
-                StreamContent content = new StreamContent(new MemoryStream(Encoding.UTF8.GetBytes("{\"transactions\": [" + msg.ToJson() + "]}")));
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("apikey", AINO_API_KEY);
                 
-                var response = await client.PostAsync(AINO_API_ADDRESS, content);
+                var jsonString = _queue.ToJson();
 
+                StreamContent content = new StreamContent(GetDataStream(jsonString));
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+
+                if (_configuration.Gzip)
+                {
+                    content.Headers.ContentEncoding.Add("gzip");
+                }
+                
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("apikey", _configuration.ApiKey);
+
+                HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, _configuration.ApiAddress);
+                req.Content = content;
+
+                var response = await client.SendAsync(req);
+                
                 var responseStr = await response.Content.ReadAsStringAsync();
 
                 Debug.WriteLine("Response: " + responseStr);
             }
+        }
+
+        private Stream GetDataStream(string jsonString)
+        {
+
+            if (_configuration.Gzip)
+            {
+                var ms = new MemoryStream();
+                using (var gzip = new GZipStream(ms, CompressionMode.Compress, true))
+                {
+                    var data = Encoding.UTF8.GetBytes(jsonString);
+                    gzip.Write(data, 0, data.Length);
+                    gzip.Close(); 
+
+                    ms.Position = 0;
+                 
+                    return ms;
+                }
+            }
+
+            var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+
+            return dataStream;
         }
     }
 }

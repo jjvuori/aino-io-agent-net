@@ -5,17 +5,34 @@ using System.Threading;
 namespace Aino
 {
 
+    delegate void DataAdded(int size);
+
     public class Agent : IDisposable
     {
-        private readonly Thread _senderThread;
-        private readonly HttpSender _sender;
-        private readonly ConcurrentQueue<AinoMessage> _messages;
+        private Thread _senderThread;
+        private HttpSender _sender;
+        private readonly MessageQueue _messages;
+        private DataAdded _dataDelegates;
+    
+
+        public Configuration Configuration { get; set; }
         
 
         public Agent()
         {
-            _messages = new ConcurrentQueue<AinoMessage>();
-            _sender = new HttpSender(_messages);
+            _messages = new MessageQueue();
+        }
+
+
+        public void Initialize()
+        {
+            if (Configuration == null)
+            {
+                throw new AinoException("Could not initialize. Configuration missing.");
+            }
+
+            _sender = new HttpSender(_messages, Configuration);
+            _dataDelegates += _sender.DataAdded;
             _senderThread = new Thread(_sender.StartSending);
             _senderThread.Start();
         }
@@ -23,6 +40,7 @@ namespace Aino
         public void AddMessage(AinoMessage msg)
         {
             _messages.Enqueue(msg);
+            _dataDelegates(_messages.Count);
         }
 
 

@@ -9,8 +9,9 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Aino</RootNamespace>
     <AssemblyName>AinoAgent</AssemblyName>
-    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -42,9 +43,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Agent.cs" />
+    <Compile Include="AinoException.cs" />
     <Compile Include="AinoMessage.cs" />
+    <Compile Include="Configuration.cs" />
     <Compile Include="HttpSender.cs" />
     <Compile Include="IdType.cs" />
+    <Compile Include="MessageQueue.cs" />
     <Compile Include="NameValuePair.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
