@@ -26,7 +26,6 @@ namespace Aino
         [DataMember(Name = "to", IsRequired = true)]
         public string To { get; set; }
 
-        //[DataMember(Name = "status", IsRequired = true)]
         public MessageStatus Status { get; set; }
 
         [DataMember(Name = "status")]
@@ -37,22 +36,22 @@ namespace Aino
         }
 
 
-        [DataMember(Name = "message")]
+        [DataMember(Name = "message", EmitDefaultValue = false)]
         public string Message { get; set; }
 
-        [DataMember(Name = "operation")]
+        [DataMember(Name = "operation", EmitDefaultValue = false)]
         public string Operation { get; set; }
 
-        [DataMember(Name = "payloadType")]
+        [DataMember(Name = "payloadType", EmitDefaultValue = false)]
         public string PayloadType { get; set; }
 
-        [DataMember(Name = "flowId")]
+        [DataMember(Name = "flowId", EmitDefaultValue = false)]
         public string FlowId { get; set; }
 
-        [DataMember(Name = "ids")]
+        [DataMember(Name = "ids", EmitDefaultValue = false)]
         public List<IdType> Ids { get; private set; }
 
-        [DataMember(Name = "metadata")]
+        [DataMember(Name = "metadata", EmitDefaultValue = false)]
         public List<NameValuePair> Metadata { get; private set; }
 
 
@@ -64,7 +63,6 @@ namespace Aino
 
             [EnumMember(Value = "success")]
             Success,
-
 
             [EnumMember(Value = "failure")]
             Failure
@@ -112,18 +110,18 @@ namespace Aino
 
         public string ToJson()
         {
-            var settings = new DataContractJsonSerializerSettings { DateTimeFormat = new DateTimeFormat("o") };
             using (var stream = new MemoryStream())
             {
-                new DataContractJsonSerializer(typeof(AinoMessage), settings).WriteObject(stream, this);
-                stream.Flush();
+                ToJson(stream);
                 return Encoding.UTF8.GetString(stream.ToArray());
             }
         }
 
         public void ToJson(Stream stream)
         {
-            
+            var settings = new DataContractJsonSerializerSettings {DateTimeFormat = new DateTimeFormat("o")};
+
+            new DataContractJsonSerializer(typeof(AinoMessage), settings).WriteObject(stream, this);
         }
 
     }

@@ -23,6 +23,10 @@ namespace Aino
             _messages = new MessageQueue();
         }
 
+        public Agent(Configuration configuration) : this()
+        {
+            Configuration = configuration;
+        }
 
         public void Initialize()
         {
@@ -46,10 +50,12 @@ namespace Aino
 
         // XX todo jono 
         // XX todo threadi_homma
-        // todo http senderi
-        // todo timeri jolla lähetetään
-        // todo conffaus
-        // todo checker message:n addin yhteyteen että pitääkö lähettää?
+        // XX todo http senderi
+        // XX todo timeri jolla lähetetään
+        // XX todo conffaus
+        // XX todo checker message:n addin yhteyteen että pitääkö lähettää?
+        // XX todo http sender error ja resend
+        // todo logging. log4net nuget lisätty
 
 
         public void Dispose()

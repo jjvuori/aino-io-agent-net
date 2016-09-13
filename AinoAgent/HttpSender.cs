@@ -10,6 +10,7 @@ using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 
 namespace Aino
 {
@@ -19,6 +20,9 @@ namespace Aino
         private readonly MessageQueue _queue;
         private readonly Configuration _configuration;
         private readonly AutoResetEvent _autoEvent;
+        private bool retry = false;
+        private int retryCount = 0;
+        private string lastJson;
         
 
         public HttpSender(MessageQueue queue, Configuration conf)
@@ -38,7 +42,7 @@ namespace Aino
             }
         }
 
-        internal void StartSending()
+        internal void  StartSending()
         {
             while (!Stop)
             {
@@ -59,27 +63,73 @@ namespace Aino
             
             using (var client = new HttpClient(new HttpClientHandler() {AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate}, true))
             {
-                
-                var jsonString = _queue.ToJson();
 
-                StreamContent content = new StreamContent(GetDataStream(jsonString));
-                content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
-
-                if (_configuration.Gzip)
+                string jsonString;
+                if (retry)
                 {
-                    content.Headers.ContentEncoding.Add("gzip");
+                    jsonString = lastJson;
                 }
-                
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("apikey", _configuration.ApiKey);
+                else
+                {
+                    jsonString = _queue.ToJson();
+                    lastJson = jsonString;
+                }
 
-                HttpRequestMessage req = new HttpRequestMessage(HttpMethod.Post, _configuration.ApiAddress);
+                var content = new StreamContent(GetDataStream(jsonString));
+
+                SetHeaders(content, client);
+
+                var req = new HttpRequestMessage(HttpMethod.Post, _configuration.ApiAddress);
                 req.Content = content;
 
                 var response = await client.SendAsync(req);
                 
                 var responseStr = await response.Content.ReadAsStringAsync();
 
+                HandleResponse(response);
+
                 Debug.WriteLine("Response: " + responseStr);
+            }
+        }
+
+        private void HandleResponse(HttpResponseMessage response)
+        {
+            if (response.IsSuccessStatusCode)
+            {
+                retry = false;
+                retryCount = 0;
+                return;
+            }
+
+            if (response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.InternalServerError)
+            {
+                // Aino io blew up?! Let's not try to resend these.
+                retry = false;
+                retryCount = 0;
+                return;
+            }
+
+            if (retryCount > 5)
+            {
+                retry = false;
+                retryCount = 0;
+                // TODO log nasty errors!
+            }
+            else
+            {
+                retry = true;
+                retryCount++;
+            }
+        }
+
+        private void SetHeaders(HttpContent content, HttpClient client)
+        {
+            content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("apikey", _configuration.ApiKey);
+
+            if (_configuration.Gzip)
+            {
+                content.Headers.ContentEncoding.Add("gzip");
             }
         }
 
