@@ -7,6 +7,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Aino", "AinoAgent\Aino.cspr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AinoAgentTester", "AinoAgentTester\AinoAgentTester.csproj", "{3E5323BA-D94E-4625-8DA9-A1D33798889E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AinoTests", "AinoTests\AinoTests.csproj", "{2A4CA9DC-0996-4CF4-B02C-F0A76BB103CC}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -21,6 +23,10 @@ Global
 		{3E5323BA-D94E-4625-8DA9-A1D33798889E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3E5323BA-D94E-4625-8DA9-A1D33798889E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3E5323BA-D94E-4625-8DA9-A1D33798889E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2A4CA9DC-0996-4CF4-B02C-F0A76BB103CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2A4CA9DC-0996-4CF4-B02C-F0A76BB103CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2A4CA9DC-0996-4CF4-B02C-F0A76BB103CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2A4CA9DC-0996-4CF4-B02C-F0A76BB103CC}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

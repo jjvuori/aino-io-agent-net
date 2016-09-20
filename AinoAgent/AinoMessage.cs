@@ -15,15 +15,22 @@ namespace Aino
         {
             Ids = new List<IdType>();
             Metadata = new List<NameValuePair>();
+            Timestamp = DateTime.Now;
         }
-
-        [DataMember(Name = "timestamp", IsRequired = true)]
+        
         public DateTime Timestamp { get; set; }
 
-        [DataMember(Name = "from", IsRequired = true)]
+        [DataMember(Name = "timestamp", IsRequired = true)]
+        public string TimestampString
+        {
+            get { return Timestamp.ToString("o"); }
+            private set { }
+        }
+
+        [DataMember(Name = "from", IsRequired = true, EmitDefaultValue = false)]
         public string From { get; set; }
 
-        [DataMember(Name = "to", IsRequired = true)]
+        [DataMember(Name = "to", IsRequired = true, EmitDefaultValue = false)]
         public string To { get; set; }
 
         public MessageStatus Status { get; set; }
@@ -119,9 +126,17 @@ namespace Aino
 
         public void ToJson(Stream stream)
         {
-            var settings = new DataContractJsonSerializerSettings {DateTimeFormat = new DateTimeFormat("o")};
+            //var settings = new DataContractJsonSerializerSettings {DateTimeFormat = new DateTimeFormat("o")};
 
-            new DataContractJsonSerializer(typeof(AinoMessage), settings).WriteObject(stream, this);
+            // .NET 4.0 :(
+            try
+            {
+                new DataContractJsonSerializer(typeof(AinoMessage) /*, settings*/).WriteObject(stream, this);
+            }
+            catch (SerializationException e)
+            {
+                throw new AinoException("Serialization failed! Maybe missing fields?", e);
+            }
         }
 
     }

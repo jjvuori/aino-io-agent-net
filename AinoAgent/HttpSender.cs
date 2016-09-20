@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.IO.Compression;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Mime;
 using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 
 namespace Aino
 {
@@ -20,9 +17,9 @@ namespace Aino
         private readonly MessageQueue _queue;
         private readonly Configuration _configuration;
         private readonly AutoResetEvent _autoEvent;
-        private bool retry = false;
-        private int retryCount = 0;
-        private string lastJson;
+        private bool _retry = false;
+        private int _retryCount = 0;
+        private byte[] _lastData;
         
 
         public HttpSender(MessageQueue queue, Configuration conf)
@@ -53,40 +50,42 @@ namespace Aino
             Console.WriteLine("Stopping sender thread");
         }
 
-        private async void SendData()
+        private void SendData()
         {
             Debug.WriteLine("Sending called.");
 
             // TODO if sending fails, try to resend the same data?
 
             if (_queue.IsEmpty) return;
-            
-            using (var client = new HttpClient(new HttpClientHandler() {AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate}, true))
+
+            using (var client = new HttpClient( new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }, true))
+            using (var data = new MemoryStream())
             {
 
-                string jsonString;
-                if (retry)
+                StreamContent content;
+                if (_retry)
                 {
-                    jsonString = lastJson;
+                    content = new StreamContent(GetDataStream(_lastData));
                 }
                 else
                 {
-                    jsonString = _queue.ToJson();
-                    lastJson = jsonString;
+                    _queue.ToJson(data);
+                    _lastData = data.ToArray();
+                    ModifyDataStream(data);
+                    content = new StreamContent(data);
                 }
-
-                var content = new StreamContent(GetDataStream(jsonString));
+                
 
                 SetHeaders(content, client);
 
                 var req = new HttpRequestMessage(HttpMethod.Post, _configuration.ApiAddress);
                 req.Content = content;
 
-                var response = await client.SendAsync(req);
-                
-                var responseStr = await response.Content.ReadAsStringAsync();
+                var response = client.SendAsync(req);
 
-                HandleResponse(response);
+                var responseStr = response.Result;
+
+                HandleResponse(response.Result);
 
                 Debug.WriteLine("Response: " + responseStr);
             }
@@ -96,29 +95,29 @@ namespace Aino
         {
             if (response.IsSuccessStatusCode)
             {
-                retry = false;
-                retryCount = 0;
+                _retry = false;
+                _retryCount = 0;
                 return;
             }
 
             if (response.StatusCode == HttpStatusCode.BadRequest || response.StatusCode == HttpStatusCode.Unauthorized || response.StatusCode == HttpStatusCode.InternalServerError)
             {
                 // Aino io blew up?! Let's not try to resend these.
-                retry = false;
-                retryCount = 0;
+                _retry = false;
+                _retryCount = 0;
                 return;
             }
 
-            if (retryCount > 5)
+            if (_retryCount > 5)
             {
-                retry = false;
-                retryCount = 0;
+                _retry = false;
+                _retryCount = 0;
                 // TODO log nasty errors!
             }
             else
             {
-                retry = true;
-                retryCount++;
+                _retry = true;
+                _retryCount++;
             }
         }
 
@@ -133,7 +132,23 @@ namespace Aino
             }
         }
 
-        private Stream GetDataStream(string jsonString)
+        private void ModifyDataStream(MemoryStream jsonData)
+        {
+            if (!_configuration.Gzip) return;
+
+            byte[] data = jsonData.ToArray();
+            jsonData.SetLength(0);
+            
+            using (var gzip = new GZipStream(jsonData, CompressionMode.Compress, true))
+            {
+                gzip.Write(data, 0, data.Length);
+                gzip.Close();
+
+                jsonData.Position = 0;
+            }
+        }
+
+        private Stream GetDataStream(byte[] jsonData)
         {
 
             if (_configuration.Gzip)
@@ -141,8 +156,8 @@ namespace Aino
                 var ms = new MemoryStream();
                 using (var gzip = new GZipStream(ms, CompressionMode.Compress, true))
                 {
-                    var data = Encoding.UTF8.GetBytes(jsonString);
-                    gzip.Write(data, 0, data.Length);
+                    
+                    gzip.Write(jsonData, 0, jsonData.Length);
                     gzip.Close(); 
 
                     ms.Position = 0;
@@ -151,7 +166,7 @@ namespace Aino
                 }
             }
 
-            var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(jsonString));
+            var dataStream = new MemoryStream(jsonData);
 
             return dataStream;
         }

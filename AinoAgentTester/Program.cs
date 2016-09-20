@@ -25,8 +25,6 @@ namespace AinoAgentTester
         }
 
 
-
-
         static Configuration GetAinoConfiguration()
         {
             var conf = new Configuration
