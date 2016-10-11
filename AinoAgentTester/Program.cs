@@ -13,7 +13,7 @@ namespace AinoAgentTester
             using (Agent agent = new Agent())
             {
                 agent.Configuration = GetAinoConfiguration();
-                agent.Initialize();
+                agent.Initialize(); 
 
                 while (true)
                 {

@@ -58,6 +58,14 @@ namespace Aino
 
             if (_queue.IsEmpty) return;
 
+            MemoryStream data2 = new MemoryStream();
+            _queue.ToJson(data2);
+
+            Console.WriteLine("Length of data: " + data2.Length);
+            data2.Position = 0;
+            Console.WriteLine(new StreamReader(data2).ReadToEnd());
+            return;
+            /*
             using (var client = new HttpClient( new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }, true))
             using (var data = new MemoryStream())
             {
@@ -88,7 +96,7 @@ namespace Aino
                 HandleResponse(response.Result);
 
                 Debug.WriteLine("Response: " + responseStr);
-            }
+            }*/
         }
 
         private void HandleResponse(HttpResponseMessage response)

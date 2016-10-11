@@ -87,6 +87,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Aino.nuspec" />
     <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>

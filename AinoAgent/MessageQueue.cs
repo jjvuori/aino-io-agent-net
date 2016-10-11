@@ -3,63 +3,61 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
+using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace Aino
 {
-    internal class MessageQueue : ConcurrentQueue<AinoMessage>
+    public class MessageQueue 
     {
-        
-        public string ToJson()
+
+        private readonly List<AinoMessage> _messages = new List<AinoMessage>(); 
+        private readonly object _lock = new object();
+
+        public void Enqueue(AinoMessage msg)
         {
-            var sb = new StringBuilder("{\"transactions\": [");
-            var firstRun = true;
-            while (!IsEmpty)
+            lock (_lock)
             {
-                AinoMessage msg;
-                var success = TryDequeue(out msg);
-                if(!success) continue;
-
-                if (!firstRun)
-                {
-                    sb.Append(",");
-                }
-
-                sb.Append(msg.ToJson());
-                firstRun = false;
+                _messages.Add(msg);
             }
+        }
 
-            sb.Append("]}");
-            return sb.ToString();
+        public int Count
+        {
+            get { return _messages.Count; }
+        }
+
+        public List<AinoMessage> DequeueAll()
+        {
+            lock (_lock)
+            {
+                var data = new AinoMessage[_messages.Count];
+                _messages.CopyTo(data);
+                _messages.Clear();
+
+                return new List<AinoMessage>(data);
+            }
+        }
+
+        public bool IsEmpty
+        {
+            get { return _messages.Count == 0; }
         }
 
         public void ToJson(Stream stream)
         {
-            var firstRun = true;
-            var transactionBytes = Encoding.UTF8.GetBytes("{\"transactions\"}: [");
-            var commabytes = Encoding.UTF8.GetBytes(",");
+            var data = new SerializationArray {Transactions = DequeueAll()};
 
-            stream.Write(transactionBytes, 0, transactionBytes.Length);
+            new DataContractJsonSerializer(typeof(SerializationArray)).WriteObject(stream, data);
+        }
 
-            while (!IsEmpty)
-            {
-                AinoMessage msg;
-                var success = TryDequeue(out msg);
-                if(!success) continue;
-
-                if (!firstRun)
-                {
-                    stream.Write(commabytes, 0, commabytes.Length);
-                }
-
-                msg.ToJson(stream);
-                firstRun = false;
-            }
-
-            var endingBytes = Encoding.UTF8.GetBytes("]}");
-
-            stream.Write(endingBytes, 0, endingBytes.Length);
+        [DataContract]
+        protected class SerializationArray
+        {
+            [DataMember(Name = "transactions")]
+            public IList<AinoMessage> Transactions = new List<AinoMessage>();
         }
     }
 }

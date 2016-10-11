@@ -35,6 +35,7 @@ namespace Aino
 
         public void Initialize()
         {
+            // RAII ??!!??! 
             if (Configuration == null)
             {
                 _logger.Fatal("Configuration object not found. Throwing exception...");
