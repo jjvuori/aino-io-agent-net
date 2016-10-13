@@ -31,23 +31,21 @@ namespace Aino
 
         internal void DataAdded(int size)
         {
-            Debug.WriteLine("Data added called!");
-            if (size >= _configuration.SizeThreshold)
-            {
-                Debug.WriteLine("Size threshold exceeded. Signaling.");
-                _autoEvent.Set();
-            }
+            if (size < _configuration.SizeThreshold) return;
+
+            Debug.WriteLine("Size threshold exceeded. Signaling.");
+            _autoEvent.Set();
         }
 
         internal void  StartSending()
         {
-            while (!Stop)
+            while (!Stop || !_queue.IsEmpty)
             {
                 _autoEvent.WaitOne(_configuration.SendInterval);
                 SendData();
             }
 
-            Console.WriteLine("Stopping sender thread");
+            Debug.WriteLine("Stopping sender thread");
         }
 
         private void SendData()
@@ -58,14 +56,6 @@ namespace Aino
 
             if (_queue.IsEmpty) return;
 
-            MemoryStream data2 = new MemoryStream();
-            _queue.ToJson(data2);
-
-            Console.WriteLine("Length of data: " + data2.Length);
-            data2.Position = 0;
-            Console.WriteLine(new StreamReader(data2).ReadToEnd());
-            return;
-            /*
             using (var client = new HttpClient( new HttpClientHandler() { AutomaticDecompression = DecompressionMethods.GZip | DecompressionMethods.Deflate }, true))
             using (var data = new MemoryStream())
             {
@@ -96,7 +86,7 @@ namespace Aino
                 HandleResponse(response.Result);
 
                 Debug.WriteLine("Response: " + responseStr);
-            }*/
+            }
         }
 
         private void HandleResponse(HttpResponseMessage response)
