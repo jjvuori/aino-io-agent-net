@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Configuration;
+using System.Collections.Specialized;
 using System.Collections.Generic;
 using System.Dynamic;
 using Aino;
+using Aino.Agents.Core;
 
 namespace AinoAgentTester
 {
@@ -13,7 +16,7 @@ namespace AinoAgentTester
             using (Agent agent = new Agent())
             {
                 agent.Configuration = GetAinoConfiguration();
-                agent.Initialize(); 
+                agent.Initialize();
 
                 while (true)
                 {
@@ -24,15 +27,30 @@ namespace AinoAgentTester
             }
         }
 
-
-        static Configuration GetAinoConfiguration()
+        static Aino.Configuration GetAinoConfiguration()
         {
-            var conf = new Configuration
+            string apikey = ConfigurationManager.AppSettings.Get("ApiKey");
+            if (!int.TryParse(ConfigurationManager.AppSettings.Get("SendInterval"), out int sendinterval))
             {
-                ApiKey = "67437716-ed3c-4f6b-84eb-a6b5dd560f3c",
-                SendInterval = 5000,
-                SizeThreshold = 3,
-                Gzip = true
+                throw new ArgumentException("SendInterval in config file is not integer");
+            }
+
+            if (!int.TryParse(ConfigurationManager.AppSettings.Get("SizeThreshold"), out int sizethreshold))
+            {
+                throw new ArgumentException("SizeThreshold in config file is not integer");
+            }
+
+            if (!bool.TryParse(ConfigurationManager.AppSettings.Get("GZip"), out bool gzip))
+            {
+                throw new ArgumentException("GZip in config file is not boolean");
+            }
+
+            var conf = new Aino.Configuration
+            {
+                ApiKey = apikey,
+                SendInterval = sendinterval,
+                SizeThreshold = sizethreshold,
+                Gzip = gzip
             };
 
             return conf;
@@ -40,11 +58,13 @@ namespace AinoAgentTester
 
         static AinoMessage CreateMessage()
         {
-            AinoMessage msg = new AinoMessage();
+            AinoMessage msg = new AinoMessage
+            {
+                From = "System 0",
+                To = "System 1",
+                Timestamp = DateTime.Now
+            };
 
-            msg.From = "System 0";
-            msg.To = "System 1";
-            msg.Timestamp = DateTime.Now;
             msg.AddMetadata("MetadataKey1", "MetadataValue1");
             msg.AddMetadata("meta 2", "meta 2 value");
 

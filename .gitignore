@@ -185,3 +185,4 @@ UpgradeLog*.htm
  # Visual Studio temp something
  .vs/
 
+/.vs/AinoAgent/v16/Server/sqlite3/db.lock

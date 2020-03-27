@@ -4,6 +4,9 @@ using System.Linq;
 using NUnit.Framework;
 using static Aino.AinoMessage;
 using Aino;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Assert = NUnit.Framework.Assert;
+using System.Runtime.Serialization;
 
 namespace AinoTests
 {
@@ -12,12 +15,11 @@ namespace AinoTests
 	{
 
         [Test]
-        [ExpectedException(typeof(AinoException))]
 	    public void TestSerializationThrowsWithoutRequiredFields()
 	    {
 	        var msg = new AinoMessage {From = "from field!"};
 
-	        msg.ToJson();
+            Assert.Throws<Aino.AinoException>(delegate { msg.ToJson(); });            
 	    }
 
 		[Test]
