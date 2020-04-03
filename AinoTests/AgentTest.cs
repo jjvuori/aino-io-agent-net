@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Aino.Agents.Core;
+﻿using Aino.Agents.Core;
+using Aino.Agents.Core.Config;
 using NUnit.Framework;
+using System.IO;
 
 namespace AinoTests
 {
@@ -14,40 +11,34 @@ namespace AinoTests
         [Test]
         public void TestGetFactoryLoggerIsDisabledIfNotConfigured()
         {
-            Agent.GetFactory().Build();
+            Assert.Throws<InvalidAgentConfigException>(delegate { Agent.GetFactory().Build(); });
+        }
+
+        [Test]
+        public void TestGetFactoryThrowsWithNonExistentConfigurationFile()
+        {
+            Assert.Throws<FileNotFoundException>(delegate {
+                string relativeconfigfilepath = @"AinoTests\config\nonexistingconfigfille.xml";
+                string absoluteconfigfilepath = new FileInfo(relativeconfigfilepath).FullName;
+                FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
+                Agent.GetFactory().SetConfigurationBuilder(fileconfigbuilder).Build();
+            });
+        }
+
+        [Test]
+        public void TestShutdownAgent()
+        {
+            string relativeconfigfilepath = @"AinoTests\config\validConfigWithProxy.xml";
+            string absoluteconfigfilepath = new FileInfo(relativeconfigfilepath).FullName;
+
+            FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
+            Agent agent = Agent.GetFactory().SetConfigurationBuilder(fileconfigbuilder).Build();
+
+            agent.IncreaseThreads();
+            agent.IncreaseThreads();
+            Assert.AreEqual(agent.GetSenderThreadCount(), 3, "thread count");
+            agent.Shutdown();
+            Assert.AreEqual(agent.GetSenderThreadCount(), 0, "thread count");
+        }
     }
-
-
 }
-}
-
-/*
-//AgentTest 
-@Test(expected = InvalidAgentConfigException.class)
-            public void testGetFactoryLoggerIsDisabledIfNotConfigured() throws Exception
-{
-    Agent.getFactory().build();
-}
-
-@Test(expected = FileNotFoundException.class)
-            public void testGetFactoryThrowsWithNonExistentConfigurationFile() throws Exception
-{
-    Agent.getFactory()
-                        .setConfigurationBuilder(new FileConfigBuilder(new File("path/to/config/file")))
-                        .build();
-            }
-
-            @Test
-            public void testShutdownAgent() throws Exception
-{
-    Agent agent = Agent.getFactory().setConfigurationBuilder(new FileConfigBuilder(new File("src/test/resources/validConfig.xml"))).build();
-
-agent.increaseThreads();
-                agent.increaseThreads();
-                assertEquals("thread count", agent.getSenderThreadCount(), 3);
-
-agent.shutdown();
-                assertEquals("thread count", agent.getSenderThreadCount(), 0);
-            }
-            
-*/

@@ -21,7 +21,7 @@ namespace Aino.Agents.Core
         private Sender _threadsender;
         private readonly MessageQueue _messages;
         private DataAdded _dataDelegates;
-        private Dictionary<Thread, Sender> senderThreads;
+        private Dictionary<Thread, Sender> senderThreads = new Dictionary<Thread, Sender>();
         private TransactionDataBuffer dataBuffer;
         private List<ITransactionValidator> validators;
         private Timer overloadCheckerTimer;

@@ -11,9 +11,10 @@ namespace Aino.Agents.Core.Config
 {
     public class InputStreamConfigBuilder : IAgentConfigBuilder
     {
-        //Todo: Logitus jollain systeemillä päälle
+        
+        //Todo: Turn on logging
         //private static readonly Log log = LogFactory.GetLog(InputStreamConfigBuilder.class);
-        private static readonly string LOGGER_SCHEMA = "Logger.xsd";
+        private static readonly string LOGGER_SCHEMA = "AinoAgent" + Path.DirectorySeparatorChar + "config" + Path.DirectorySeparatorChar + "Logger.xsd";
         
         private const string CONFIG_ENABLED_ATT_Q = "enabled";
         private const string CONFIG_LOGGER_SERVICE_Q = "ainoLoggerService";
@@ -93,10 +94,18 @@ namespace Aino.Agents.Core.Config
             schemas.Add("", LOGGER_SCHEMA); // Tämä vaatii paremman linkityksen tuohon loggerschemaan esim. resurssina.
 
             bool validationErrors = false;
-            XDocument doc = XDocument.Load(stream);
-            doc.Validate(schemas, (s, e) => {
+
+            try
+            {
+                XDocument doc = XDocument.Load(stream);
+                doc.Validate(schemas, (s, e) => {
+                    validationErrors = true;
+                });
+            }
+            catch (Exception e)
+            {
                 validationErrors = true;
-            });
+            }
 
             if(validationErrors)
             {

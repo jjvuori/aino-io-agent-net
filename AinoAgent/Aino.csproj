@@ -66,6 +66,7 @@
       <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.29.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -91,14 +92,14 @@
     <Compile Include="AinoMessage.cs" />
     <Compile Include="ApiClient.cs" />
     <Compile Include="Configuration.cs" />
-    <Compile Include="Config\AgentConfig.cs" />
-    <Compile Include="Config\ClassPathResourceConfigBuilder.cs" />
-    <Compile Include="Config\FileConfigBuilder.cs" />
-    <Compile Include="Config\IAgentConfigBuilder.cs" />
-    <Compile Include="Config\InputStreamConfigBuilder.cs" />
-    <Compile Include="Config\InvalidAgentConfigException.cs" />
-    <Compile Include="Config\KeyNameListConfig.cs" />
-    <Compile Include="Config\ServiceConfig.cs" />
+    <Compile Include="ConfigLogic\AgentConfig.cs" />
+    <Compile Include="ConfigLogic\ClassPathResourceConfigBuilder.cs" />
+    <Compile Include="ConfigLogic\FileConfigBuilder.cs" />
+    <Compile Include="ConfigLogic\IAgentConfigBuilder.cs" />
+    <Compile Include="ConfigLogic\InputStreamConfigBuilder.cs" />
+    <Compile Include="ConfigLogic\InvalidAgentConfigException.cs" />
+    <Compile Include="ConfigLogic\KeyNameListConfig.cs" />
+    <Compile Include="ConfigLogic\ServiceConfig.cs" />
     <Compile Include="DefaultApiClient.cs" />
     <Compile Include="HttpProxyFactory.cs" />
     <Compile Include="HttpSender.cs" />

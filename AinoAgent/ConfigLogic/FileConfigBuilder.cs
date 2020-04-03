@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Aino.Agents.Core.Config
 {
-    class FileConfigBuilder : InputStreamConfigBuilder
+    public class FileConfigBuilder : InputStreamConfigBuilder
     {
         /// <summary>
         /// Constructor.
