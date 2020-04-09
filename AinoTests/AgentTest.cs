@@ -17,9 +17,12 @@ namespace AinoTests
         [Test]
         public void TestGetFactoryThrowsWithNonExistentConfigurationFile()
         {
-            Assert.Throws<FileNotFoundException>(delegate {
-                string relativeconfigfilepath = @"AinoTests\config\nonexistingconfigfille.xml";
-                string absoluteconfigfilepath = new FileInfo(relativeconfigfilepath).FullName;
+            string relativeconfigfilepath = @"AinoTests\config";
+            string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
+            string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + "nonexistingconfigfille.xml").FullName;
+            Assert.IsTrue(Directory.Exists(absoluteconfigfiledir), "Directory doesn't exist");
+            Assert.Throws<FileNotFoundException>(delegate
+            {
                 FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
                 Agent.GetFactory().SetConfigurationBuilder(fileconfigbuilder).Build();
             });
@@ -28,9 +31,9 @@ namespace AinoTests
         [Test]
         public void TestShutdownAgent()
         {
-            string relativeconfigfilepath = @"AinoTests\config\validConfigWithProxy.xml";
-            string absoluteconfigfilepath = new FileInfo(relativeconfigfilepath).FullName;
-
+            string relativeconfigfilepath = @"AinoTests\config\";
+            string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
+            string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + "validConfigWithProxy.xml").FullName;
             FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
             Agent agent = Agent.GetFactory().SetConfigurationBuilder(fileconfigbuilder).Build();
 

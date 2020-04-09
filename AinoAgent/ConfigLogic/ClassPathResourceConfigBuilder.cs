@@ -30,7 +30,8 @@ namespace Aino.Agents.Core.Config
         {
             MemoryStream streamresult;
 
-            using (Stream stream = typeof(ClassPathResourceConfigBuilder).Assembly.GetManifestResourceStream("assembly.folder." + filename))
+            System.Reflection.Assembly s = typeof(ClassPathResourceConfigBuilder).Assembly;
+            using (Stream stream = s.GetManifestResourceStream(filename))
             {
                 using (StreamReader sr = new StreamReader(stream))
                 {

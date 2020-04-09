@@ -95,9 +95,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="config\Logger.xsd">
+    <EmbeddedResource Include="config\Logger.xsd">
       <SubType>Designer</SubType>
-    </None>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </EmbeddedResource>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -107,12 +108,12 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="config\invalidConfig.xml">
+    <EmbeddedResource Include="config\invalidConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Include="config\validConfig.xml">
+    </EmbeddedResource>
+    <EmbeddedResource Include="config\validConfig.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </EmbeddedResource>
     <None Include="config\validConfigWithIntervalAndSize.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
