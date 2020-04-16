@@ -17,6 +17,9 @@ namespace Aino
          */
         public string GetEntry(string key)
         {
+            if (key == null)
+                return null;
+
             if (entries.TryGetValue(key, out string resultvalue))
             {
                 return resultvalue;
@@ -50,7 +53,7 @@ namespace Aino
          *
          * @param operationsMap Map containing key-value pairs to be added.
          */
-        public void addEntries(Dictionary<string, string> operationsMap)
+        public void AddEntries(Dictionary<string, string> operationsMap)
         {
             foreach (string omkey in operationsMap.Keys)
             {
@@ -82,7 +85,7 @@ namespace Aino
          * @param name value to check
          * @return true if value was found
          */
-        public bool nameExists(string name)
+        public bool NameExists(string name)
         {
             return entries.ContainsValue(name);
         }

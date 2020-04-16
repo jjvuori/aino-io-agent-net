@@ -27,13 +27,15 @@ namespace Aino.Agents.Core
             {
                 try
                 {
-                    obj.AddField(field.ToString(), (int)field);
+                    string fe = field.ToString();
+                    var fv = entry.GetFieldValue(fe);
+                    obj.AddField(field.ToString(), fv);
                 }
                 catch { }
             }
 
-            //Todo: No slightest clue whether this should be like this.
-            foreach (KeyValuePair<string, List <string>> idList in entry.GetIds())
+            Dictionary<string, List<string>> g = entry.GetIds();
+            foreach (KeyValuePair<string, List <string>> idList in g)
             {
                 IdList list = obj.AddIdType(entry.GetIdTypeName(idList.Key));
                 list.AddIds(idList.Value);
@@ -66,7 +68,7 @@ namespace Aino.Agents.Core
 
         private int size;
 
-        private readonly Dictionary<string, object> fields = new Dictionary<string, object>();
+        public readonly Dictionary<string, object> fields = new Dictionary<string, object>();
 
         private readonly Dictionary<string, IdList> idLists = new Dictionary<string, IdList>();
 
@@ -77,7 +79,7 @@ namespace Aino.Agents.Core
         /// </summary>
         public TransactionSerializable()
         {
-            fields.Add("timestamp", DateTimeOffset.Now.Millisecond);
+            fields.Add("timestamp", DateTime.Now.Ticks);
             fields.Add("ids", new List<IdList>(2));
         }
 

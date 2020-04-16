@@ -38,17 +38,6 @@ namespace Aino.Agents.Core
                 flowId
             }
 
-            /*
-            public static readonly string to;
-            public static readonly string from;
-            public static readonly string operation;
-            public static readonly string message;
-            public static readonly string status;
-            public static readonly long timestamp;
-            public static readonly string payloadType;
-            public static readonly string flowId;
-            */
-
             public static string fieldName;
             FieldEnum(string n)
             {
@@ -66,10 +55,9 @@ namespace Aino.Agents.Core
         /// </summary>
         /// <param name="field">Field type to get the value for</param>
         /// <returns>Value of the field</returns>
-        public object GetFieldValue(FieldEnum field)
+        public object GetFieldValue(string field)
         {
-           string fieldenum = field.ToString();
-           switch (fieldenum)
+           switch (field)
             {
                 case "to":
                     return config.GetApplications().GetEntry(GetToKey());
@@ -83,12 +71,12 @@ namespace Aino.Agents.Core
                     return GetStatus();
                 case "timestamp":
                     return timestamp;
-                case "payloadtype":
+                case "payloadType":
                     return config.GetPayloadTypes().GetEntry(GetPayloadTypeKey());
-                case "flowid":
+                case "flowId":
                     return GetFlowId();
                 default:
-                    throw new AgentCoreException("Invalid field [" + fieldenum + "]!");
+                    throw new AgentCoreException("Invalid field [" + field + "]!");
             }
         }
 
@@ -100,7 +88,7 @@ namespace Aino.Agents.Core
         public Transaction(AgentConfig config)
         {
             ids = new Dictionary<string, List<string>>();
-            timestamp = DateTimeOffset.Now.Millisecond;
+            timestamp = DateTime.Now.Ticks; //Note: This is not comparable to Java. To use equivalent to Java's System.currentTimeMillis(), DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() from .Net 4.6 is an option
             metadata = new List<NameValuePair>(2);
             this.config = config;
         }

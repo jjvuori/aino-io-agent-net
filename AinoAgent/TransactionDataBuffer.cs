@@ -13,7 +13,6 @@ namespace Aino.Agents.Core
     /// </summary>
     public class TransactionDataBuffer
     {
-        //private readonly  ObjectMapper mapper = new ObjectMapper(); //Todo: This should be a JSON-converter
         private readonly List<ITransactionDataObserver> observers = new List<ITransactionDataObserver>();
 
         private readonly ConcurrentQueue<TransactionSerializable> transactions = new ConcurrentQueue<TransactionSerializable>();
@@ -111,13 +110,14 @@ namespace Aino.Agents.Core
         public string GetDataToSend()
         {
             List<TransactionSerializable> entries = new List<TransactionSerializable>();
-            var cqts = new ConcurrentQueue<TransactionSerializable>();
-            
-            //Todo: This should call the ElementsToDrain at some point here.
 
-            while (cqts.TryDequeue(out var entry)) // Todo: This might require "DrainTo"
+            int elementstodrain = ElementsToDrain();
+            for (int entryindex = 0; entryindex < elementstodrain; entryindex++)
             {
-                entries.Add(entry);
+                if(transactions.TryDequeue(out TransactionSerializable ts))
+                {
+                    entries.Add(ts);
+                }
             }
 
             string output = JsonConvert.SerializeObject(entries);

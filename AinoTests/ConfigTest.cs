@@ -28,7 +28,7 @@ namespace AinoTests
             entries.Add("test1", "test11");
             entries.Add("test666", "test6661");
 
-            testKeyNameListConfig.addEntries(entries);
+            testKeyNameListConfig.AddEntries(entries);
 
             Assert.AreEqual("test11", testKeyNameListConfig.GetEntry("test1"));
             Assert.AreEqual("test6661", testKeyNameListConfig.GetEntry("test666"));
