@@ -39,13 +39,9 @@ namespace Aino.Agents.Core
 
 
             dataBuffer = new TransactionDataBuffer(agentConfig.GetSizeThreshold());
-            //Sender sender = CreateSender();
-            //senderThreads.Add(new Thread(sender), sender);
-
 
             Thread thread = new Thread(new ThreadStart(AddSenderThread));
             senderThreads.Add(thread, _threadsender);
-
 
             validators = new List<ITransactionValidator>();
             validators.Add(new OperationValidator(this.agentConfig));
@@ -262,16 +258,6 @@ namespace Aino.Agents.Core
             _dataDelegates(_messages.Count);
         }
 
-
-        // XX todo jono 
-        // XX todo threadi_homma
-        // XX todo http senderi
-        // XX todo timeri jolla lähetetään
-        // XX todo conffaus
-        // XX todo checker message:n addin yhteyteen että pitääkö lähettää?
-        // XX todo http sender error ja resend
-        // todo logging. log4net nuget lisätty
-
         protected virtual void Dispose(bool disposing)
         {
             if (!disposed)
@@ -320,7 +306,7 @@ namespace Aino.Agents.Core
             {
                 AgentConfig agentConfig;
 
-                if (null == builder)
+                if (builder == null)
                 {
                     throw new InvalidAgentConfigException("No builder specified!");
                 }

@@ -57,6 +57,7 @@ namespace Aino.Agents.Core
         /// <returns>Value of the field</returns>
         public object GetFieldValue(string field)
         {
+            //Todo: You might want to to change this "string field" to something more explicit type.
            switch (field)
             {
                 case "to":
@@ -258,7 +259,15 @@ namespace Aino.Agents.Core
         /// <returns>All ids</returns>
         public List<string> GetIdsByType(string typeKey)
         {
-            return ids[typeKey];
+            List<string> value;
+            if(ids.TryGetValue(typeKey, out value))
+            {
+                return ids[typeKey];
+            }
+            else
+            {
+                return null;
+            }
         }
 
         /// <summary>

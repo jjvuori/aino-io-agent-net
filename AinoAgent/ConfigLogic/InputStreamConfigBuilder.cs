@@ -104,6 +104,7 @@ namespace Aino.Agents.Core.Config
             }
             catch (Exception e)
             {
+                _ = e;
                 validationErrors = true;
             }
 
@@ -219,12 +220,6 @@ namespace Aino.Agents.Core.Config
 
             StreamReader sr = new StreamReader(stream);
             sr.BaseStream.Seek(0, SeekOrigin.Begin);
-
-            /* This would work with MemoryStream, but not with Stream
-            byte[] buffer = stream.GetBuffer();
-            Array.Clear(buffer, 0, buffer.Length);
-            stream.Position = 0;
-            stream.SetLength(0);*/
         }
 
         private void CloseStream()

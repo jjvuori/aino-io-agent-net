@@ -87,11 +87,16 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AgentTest.cs" />
-    <Compile Include="ConfigBuilderTest.cs" />
-    <Compile Include="ConfigTest.cs" />
+    <Compile Include="IntegrationTests\AgentIntegrationTest.cs" />
+    <Compile Include="ValidatorTests\ApplicationValidatorTest.cs" />
+    <Compile Include="ConfigTests\ConfigBuilderTest.cs" />
+    <Compile Include="ConfigTests\KeyNameListConfigTest.cs" />
     <Compile Include="MessageTest.cs" />
     <Compile Include="QueueTest.cs" />
+    <Compile Include="SenderTest.cs" />
     <Compile Include="TransactionDataBufferTest.cs" />
+    <Compile Include="ValidatorTests\IdTypeValidatorTest.cs" />
+    <Compile Include="ValidatorTests\OperationValidatorTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

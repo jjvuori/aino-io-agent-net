@@ -1,16 +1,12 @@
-﻿using System;
-using System.Diagnostics;
-using System.Linq;
+﻿using System.Linq;
 using NUnit.Framework;
 using static Aino.AinoMessage;
 using Aino;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Assert = NUnit.Framework.Assert;
-using System.Runtime.Serialization;
 
 namespace AinoTests
 {
-	[TestFixture]
+    [TestFixture]
 	public class MessageTest
 	{
 

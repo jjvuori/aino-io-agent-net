@@ -11,11 +11,9 @@ using log4net;
 
 namespace Aino.Agents.Core
 {
-    class Sender : ITransactionDataObserver
+    public class Sender : ITransactionDataObserver
     {
         private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
-
-        //Todo: Java's Runnable is ThreadStart in C#, but it is not an interface. It is the core thread class.
 
         private enum Action
         {
@@ -175,7 +173,6 @@ namespace Aino.Agents.Core
             }
         }
 
-        //Todo: This probably needs something else since this has now nothing to do with gzip
         private byte[] GetRequestContent()
         {
             if (!agentConfig.IsGzipEnabled())
