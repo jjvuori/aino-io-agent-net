@@ -12,9 +12,6 @@ Aino.io works by analyzing transactions between enterprise applications and othe
 
 This Aino Agent can be installed 
 
-### Via nuget
-Are we gonna use nuget.org or bintray for this? If using bintray, user must add new source for nuget. If using nuget.org, then it is just installing through it.
-
 ### From sources
 Download this repository and build. Then add the created library to your project.
 
@@ -45,6 +42,8 @@ agent.Initialize();
 var msg = new AinoMessage();
 msg.From = "System 0";
 msg.To = "System 1";
+msg.Operation = "Operation 1";
+msg.FlowId = "12323412";
 msg.Status = AinoMessage.MessageStatus.Success;
 
 agent.AddMessage(msg);
@@ -73,6 +72,9 @@ agent.Initialize();
 var msg = new AinoMessage();
 msg.From = "System 0";
 msg.To = "System 1";
+msg.Operation = "Operation 1";
+msg.FlowId = "12323412";
+msg.PayloadType = "Operation 1";
 msg.Status = AinoMessage.MessageStatus.Failure;
 
 msg.AddMetadata("MetadataKey1", "MetadataValue1");
