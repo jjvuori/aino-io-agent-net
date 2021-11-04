@@ -17,13 +17,18 @@ steps:
     restoreSolution: '$(solution)'
 
 - task: VSBuild@1
-  continueOnError: true
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
 
 - task: VSTest@2
+  continueOnError: true
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'Aino.io'
+    publishLocation: 'Container'
