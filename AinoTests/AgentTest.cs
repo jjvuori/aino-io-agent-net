@@ -9,8 +9,25 @@ namespace AinoTests
     [TestFixture]
     class AgentTest
     {
+        private TestContext testContextInstance;
+        /// <summary>
+        ///Gets or sets the test context which provides
+        ///information about and functionality for the current test run.
+        ///</summary>
+        public TestContext TestContext
+        {
+            get
+            {
+                return testContextInstance;
+            }
+            set
+            {
+                testContextInstance = value;
+            }
+        }
+
         //string relativeconfigfilepath = @"AinoTests"+ Path.DirectorySeparatorChar + "config";
-        string relativeconfigfilepath = @"config";
+        
         [Test]
         public void TestGetFactoryLoggerIsDisabledIfNotConfigured()
         {
@@ -20,7 +37,7 @@ namespace AinoTests
         [Test]
         public void TestGetFactoryThrowsWithNonExistentConfigurationFile()
         {
-            
+            string relativeconfigfilepath = TestContext.CurrentContext.WorkDirectory+Path.DirectorySeparatorChar+@"config";
             string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
             string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + "nonexistingconfigfille.xml").FullName;
             Assert.IsTrue(Directory.Exists(absoluteconfigfiledir), "Directory doesn't exist"+absoluteconfigfilepath);
@@ -34,6 +51,7 @@ namespace AinoTests
         [Test]
         public void TestShutdownAgent()
         {
+            string relativeconfigfilepath = TestContext.CurrentContext.WorkDirectory + Path.DirectorySeparatorChar + @"config";
             string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
             string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + "validConfigWithProxy.xml").FullName;
             FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
@@ -53,6 +71,7 @@ namespace AinoTests
         [TestCase("invalidConfig.xml", false)]
         public void TestGetFactoryWorksWithValidConfigurationFile(string file, bool expectedresult)
         {
+            string relativeconfigfilepath = TestContext.CurrentContext.WorkDirectory + Path.DirectorySeparatorChar + @"config";
             Agent agent = null;
             try
             {
