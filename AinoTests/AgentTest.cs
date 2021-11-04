@@ -9,6 +9,8 @@ namespace AinoTests
     [TestFixture]
     class AgentTest
     {
+        //string relativeconfigfilepath = @"AinoTests"+ Path.DirectorySeparatorChar + "config";
+        string relativeconfigfilepath = @"config";
         [Test]
         public void TestGetFactoryLoggerIsDisabledIfNotConfigured()
         {
@@ -18,10 +20,10 @@ namespace AinoTests
         [Test]
         public void TestGetFactoryThrowsWithNonExistentConfigurationFile()
         {
-            string relativeconfigfilepath = @"AinoTests\config";
+            
             string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
             string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + "nonexistingconfigfille.xml").FullName;
-            Assert.IsTrue(Directory.Exists(absoluteconfigfiledir), "Directory doesn't exist");
+            Assert.IsTrue(Directory.Exists(absoluteconfigfiledir), "Directory doesn't exist"+absoluteconfigfilepath);
             Assert.Throws<FileNotFoundException>(delegate
             {
                 FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
@@ -32,7 +34,6 @@ namespace AinoTests
         [Test]
         public void TestShutdownAgent()
         {
-            string relativeconfigfilepath = @"AinoTests\config\";
             string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
             string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + "validConfigWithProxy.xml").FullName;
             FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));
@@ -56,8 +57,6 @@ namespace AinoTests
             try
             {
                 Agent.LoggerFactory factory = Agent.GetFactory();
-
-                string relativeconfigfilepath = @"AinoTests\config\";
                 string absoluteconfigfiledir = new FileInfo(relativeconfigfilepath).FullName + Path.DirectorySeparatorChar;
                 string absoluteconfigfilepath = new FileInfo(absoluteconfigfiledir + file).FullName;
                 FileConfigBuilder fileconfigbuilder = new FileConfigBuilder(File.Open(absoluteconfigfilepath, FileMode.Open));

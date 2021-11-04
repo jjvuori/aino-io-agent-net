@@ -14,7 +14,7 @@ namespace Aino.Agents.Core.Config
         
         //Todo: Turn on logging
         //private static readonly Log log = LogFactory.GetLog(InputStreamConfigBuilder.class);
-        private static readonly string LOGGER_SCHEMA = "AinoAgent" + Path.DirectorySeparatorChar + "config" + Path.DirectorySeparatorChar + "Logger.xsd";
+        private static readonly string LOGGER_SCHEMA = "config" + Path.DirectorySeparatorChar + "Logger.xsd";
         
         private const string CONFIG_ENABLED_ATT_Q = "enabled";
         private const string CONFIG_LOGGER_SERVICE_Q = "ainoLoggerService";
