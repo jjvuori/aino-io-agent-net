@@ -17,6 +17,7 @@ steps:
     restoreSolution: '$(solution)'
 
 - task: VSBuild@1
+  continueOnError: true
   inputs:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
