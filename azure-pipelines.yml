@@ -21,12 +21,24 @@ steps:
     solution: '$(solution)'
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
-
 - task: VSTest@2
   continueOnError: true
   inputs:
     platform: '$(buildPlatform)'
     configuration: '$(buildConfiguration)'
+- task: BuildQualityChecks@8
+  inputs:
+    checkWarnings: true
+    warningFailOption: 'build'
+    checkCoverage: false
+    coverageFailOption: 'build'
+    coverageType: 'blocks'   
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: $(buildPath) 
+    contents: '**'
+    targetFolder: $(Build.ArtifactStagingDirectory)
+    CleanTargetFolder: true
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
