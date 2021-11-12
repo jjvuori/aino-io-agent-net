@@ -34,12 +34,12 @@ steps:
     checkCoverage: false
     coverageFailOption: 'build'
     coverageType: 'blocks'   
-- task: CopyFiles@2
+# Package a project
+- task: NuGetCommand@2
   inputs:
-    SourceFolder: $(buildPath) 
-    contents: '**'
-    targetFolder: $(Build.ArtifactStagingDirectory)
-    CleanTargetFolder: true
+    command: 'pack'
+    packagesToPack: '**/*.csproj'
+    packDestination: '$(Build.ArtifactStagingDirectory)'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
