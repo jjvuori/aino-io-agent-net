@@ -44,9 +44,9 @@ steps:
 - task: NuGetCommand@2
   inputs:
     command: 'push'
-    feedsToUse: 'select'
-    vstsFeed: 'entteeridevops/EntteriNugets'
-    publishVstsFeed: 'Aino.io'
+    packagesToPush: '$(Build.ArtifactStagingDirectory)/**/*.nupkg;!$(Build.ArtifactStagingDirectory)/**/*.symbols.nupkg'
+    nuGetFeedType: 'internal'
+    publishVstsFeed: '404dd184-ce9e-4081-aae1-544c7f8b94df/e0235388-55a2-40f2-8d91-cea321e687b8'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
