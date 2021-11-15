@@ -40,6 +40,13 @@ steps:
     command: 'pack'
     packagesToPack: 'AinoAgent/*.csproj'
     packDestination: '$(Build.ArtifactStagingDirectory)'
+# Push a project
+- task: NuGetCommand@2
+  inputs:
+    command: 'push'
+    feedsToUse: 'select'
+    vstsFeed: 'entteeridevops/EntteriNugets'
+    publishVstsFeed: 'Aino.io'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)'
